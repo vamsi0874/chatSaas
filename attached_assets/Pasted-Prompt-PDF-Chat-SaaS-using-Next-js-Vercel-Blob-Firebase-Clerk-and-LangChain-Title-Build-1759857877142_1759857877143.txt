@@ -1,0 +1,236 @@
+Prompt: PDF Chat SaaS using Next.js, Vercel Blob, Firebase, Clerk, and LangChain
+
+Title:
+📄 Build an AI PDF Chat App with Next.js, Vercel Blob Storage, Firebase, Clerk Auth & LangChain
+
+Prompt:
+
+Build a PDF Chat SaaS web application using Next.js 14 (App Router), TypeScript, Tailwind CSS, Shadcn UI, Framer Motion, Vercel Blob for file storage, Firebase Firestore for database, Clerk for authentication, and LangChain + Gemini/OpenAI for AI responses.
+
+🧠 Core Idea
+
+Users can:
+
+Upload PDFs (stored in Vercel Blob)
+
+View them in their dashboard
+
+Chat with the content using AI that retrieves context from their uploaded files.
+
+🏠 Home Page
+
+Clean, SaaS-style landing page with:
+
+Hero section: “Upload your PDFs and chat with them using AI.”
+
+Subtext: “Powered by LangChain, Gemini, and Vercel Blob.”
+
+CTA buttons: “Sign In” (Clerk) and “Get Started”
+
+Smooth entrance animations using Framer Motion.
+
+Responsive and professional layout (use Tailwind + Shadcn components).
+
+🔐 Authentication
+
+Use Clerk for:
+
+Sign in / Sign up pages
+
+<UserButton /> in Navbar
+
+Only authenticated users can access /dashboard and /file/[id].
+
+Add route protection using middleware or server-side auth check.
+
+📤 File Upload (Vercel Blob)
+
+On the dashboard, allow users to upload PDFs via drag-and-drop.
+
+Use Vercel Blob SDK for uploads.
+
+After upload:
+
+Store file metadata in Firestore under:
+
+users/{userId}/files/{fileId}
+
+
+Fields: name, blobUrl, createdAt, size, status.
+
+Extract text from PDF using pdf-parse or LangChain’s PDFLoader.
+
+Generate embeddings using Google Generative AI Embeddings or OpenAI Embeddings.
+
+Store vectors in Pinecone (or Chroma if local).
+
+Show upload progress and success animation (Shadcn Progress + Toast).
+
+💼 Dashboard (/dashboard)
+
+Display all uploaded PDFs for the logged-in user.
+
+Each file shown as a card using Shadcn Card component:
+
+PDF title (from filename)
+
+Uploaded date
+
+“Open” button → navigates to /file/[id]
+
+Option to delete or re-upload files.
+
+Animate layout changes with Framer Motion.
+
+💬 Chat with PDF (/file/[id])
+
+Two-column layout (responsive):
+
+Left Panel: PDF Viewer
+
+Use react-pdf to display PDF pages from blobUrl.
+
+Include pagination or vertical scrolling.
+
+Right Panel: Chat Interface
+
+Display chat messages stored in Firestore (users/{userId}/files/{fileId}/chats).
+
+Use Shadcn Card, ScrollArea, Input, Button.
+
+Support streaming AI responses with loading states (“thinking…” bubble).
+
+On new question:
+
+Add user message to Firestore.
+
+Trigger API route → retrieves relevant embeddings via LangChain → responds using Gemini/OpenAI.
+
+Save AI response to Firestore.
+
+⚙️ Backend Logic
+
+Upload route (/api/upload)
+
+Handles PDF uploads via Vercel Blob.
+
+Parses text and generates embeddings.
+
+Saves metadata to Firestore.
+
+Chat route (/api/chat)
+
+Takes fileId and question as input.
+
+Retrieves embeddings from Pinecone.
+
+Uses LangChain’s RetrievalQAChain or a custom ConversationalRetrievalChain.
+
+Returns structured AI response.
+
+Database schema (Firestore):
+
+users/{userId}/files/{fileId}
+    ├── name: string
+    ├── blobUrl: string
+    ├── uploadDate: timestamp
+    ├── status: "processing" | "ready"
+    └── chats/{chatId}
+        ├── role: "human" | "ai"
+        ├── message: string
+        ├── createdAt: timestamp
+
+🧩 Project Structure
+src/
+ ├── app/
+ │   ├── page.tsx                  → Landing page
+ │   ├── dashboard/page.tsx        → Dashboard with uploads
+ │   ├── file/[id]/page.tsx        → PDF Chat interface
+ │   ├── api/
+ │   │    ├── upload/route.ts      → Handle Vercel Blob upload + embedding
+ │   │    ├── chat/route.ts        → Chat with AI over PDF
+ │   └── layout.tsx                → Global layout with ClerkProvider
+ ├── components/
+ │   ├── Navbar.tsx                → Includes Clerk <UserButton />
+ │   ├── FileUpload.tsx            → Vercel Blob upload + progress
+ │   ├── FileCard.tsx              → Dashboard PDF cards
+ │   ├── Chat.tsx                  → Chat UI
+ │   ├── PdfViewer.tsx             → React PDF viewer
+ │   ├── Loader.tsx                → Shadcn skeleton/loading animation
+ │   ├── EmptyState.tsx            → Shown when no PDFs uploaded
+ ├── lib/
+ │   ├── firebase.ts               → Firestore config
+ │   ├── vercel-blob.ts            → Upload helper functions
+ │   ├── langchain.ts              → LangChain + embeddings + retriever logic
+ │   ├── auth.ts                   → Clerk server-side utilities
+ │   ├── utils.ts                  → Helper functions
+ ├── styles/
+ │   └── globals.css
+ ├── types/
+ │   └── index.d.ts                → Type definitions
+
+🪄 Design and UX
+
+Frameworks: TailwindCSS + Shadcn UI
+
+Use Shadcn components: Button, Card, Input, Progress, ScrollArea, Skeleton, Toast.
+
+Use Framer Motion for subtle animations and transitions.
+
+Responsive design for mobile/tablet layouts.
+
+Colors: use neutral palette (zinc, gray, indigo).
+
+Rounded corners, soft shadows, generous spacing.
+
+Add subtle background gradient or pattern for premium feel.
+
+💬 AI Integration
+
+Use LangChain’s ChatPromptTemplate, RetrievalQAChain, and Document structure.
+
+Use Google Generative AI Embeddings (Gemini) or OpenAI embeddings.
+
+Store/retrieve chunks from Pinecone.
+
+Each question fetches the top-K similar chunks and responds contextually.
+
+Persist entire chat history in Firestore.
+
+🚀 Extra Features
+
+Add Toast notifications for success/error.
+
+Add skeleton loaders for dashboard + chat.
+
+Show upload progress percentage.
+
+Display "processing PDF" indicator while embeddings are being created.
+
+Allow chat reloading (refresh-safe due to Firestore sync).
+
+Ready-to-deploy setup for Vercel.
+
+✅ Deliverables
+
+Fully functional Next.js 14 + TypeScript + Tailwind + Shadcn UI app.
+
+Secure Clerk authentication.
+
+PDF upload using Vercel Blob.
+
+AI-powered chat with LangChain & embeddings.
+
+Firestore database for metadata + chat history.
+
+Production-ready structure, modular components, and responsive design.
+
+Include .env.example for configuration:
+
+CLERK_SECRET_KEY=
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+GOOGLE_API_KEY=
+PINECONE_API_KEY=
+FIREBASE_API_KEY=
+FIREBASE_PROJECT_ID=
+BLOB_READ_WRITE_TOKEN=
